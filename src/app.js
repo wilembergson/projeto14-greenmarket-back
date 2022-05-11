@@ -14,13 +14,13 @@ const User = require('./models/User')
 
 
 //rota publica
-app.get('/', (req,res) => {
+app.get('/home', (req,res) => {
     res.status(200).json({msg: 'Bem vindo a nossa loja!'})
 })
 
 
 //rota privada (após login) checktoken é o middleware que valida login nas rotas privadas
-app.get('/user/:id', checkToken, async (req,res) => {
+/*app.get('/user/:id', checkToken, async (req,res) => {
     const id = req.params.id
     const user = await User.findById(id, '-password')
 
@@ -152,6 +152,6 @@ app.post('/auth/register', async(req, res) => {
         res.status(500).json({msg: 'Erro no servidor, 500!'})
     }
 
-})
+})*/
 
-app.listen(5000, ()=> console.log('Running...'))
+app.listen(process.env.PORT)
