@@ -16,7 +16,7 @@ app.get('/home', (req,res) => {
     res.status(200).json({msg: 'Bem vindo a nossa loja!'})
 })
 
-/*credenciais
+credenciais
 const dbUser = process.env.DB_USER
 const dbPassword = process.env.DB_PASS
 
@@ -28,10 +28,10 @@ mongoose
         app.listen(3000)
         console.log('Conectado ao banco de dados.')
     })
-    .catch((err) => console.log(err))*/
+    .catch((err) => console.log(err))
 
 //rota privada (após login) checktoken é o middleware que valida login nas rotas privadas
-/*app.get('/user/:id', checkToken, async (req,res) => {
+app.get('/user/:id', checkToken, async (req,res) => {
     const id = req.params.id
     const user = await User.findById(id, '-password')
 
@@ -147,6 +147,6 @@ app.post('/auth/register', async(req, res) => {
         res.status(500).json({msg: 'Erro no servidor, 500!'})
     }
 
-})*/
+})
 
-app.listen(process.env.PORT)
+//app.listen(process.env.PORT)
