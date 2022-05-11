@@ -42,6 +42,8 @@ mongoose
     res.status(200).json({ user})
 })
 
+
+
 //middleware checa o token
 function checkToken(req, res, next){
     const authHeader = req.headers['authorization']
