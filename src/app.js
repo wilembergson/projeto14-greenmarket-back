@@ -5,7 +5,6 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const app = express()
-//json response express
 app.use(express.json())
 
 //models
@@ -16,7 +15,7 @@ app.get('/home', (req,res) => {
     res.status(200).json({msg: 'Bem vindo a nossa loja!'})
 })
 
-credenciais
+/*credenciais
 const dbUser = process.env.DB_USER
 const dbPassword = process.env.DB_PASS
 
@@ -147,6 +146,6 @@ app.post('/auth/register', async(req, res) => {
         res.status(500).json({msg: 'Erro no servidor, 500!'})
     }
 
-})
+})*/
 
-//app.listen(process.env.PORT)
+app.listen(process.env.PORT, ()=>console.log('Connected on port', process.env.PORT))
