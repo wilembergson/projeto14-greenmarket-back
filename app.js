@@ -10,6 +10,7 @@ app.use(express.json())
 
 //models
 const User = require('./models/User')
+const { json } = require('express/lib/response')
 
 
 
@@ -20,8 +21,9 @@ app.get('/', (req,res) => {
 
 
 //rota privada (após login) checktoken é o middleware que valida login nas rotas privadas
-app.get('/user/:id', checkToken, async (req,res) => {
-    const id = req.params.id
+app.get('/user/', checkToken, async (req,res) => {
+    const id = res.locals.id
+    console.log(id)
     const user = await User.findById(id, '-password')
 
     if(!user){
@@ -34,10 +36,23 @@ app.get('/user/:id', checkToken, async (req,res) => {
 //middleware checa o token
 function checkToken(req, res, next){
     const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split("")[1]
+    const tokenSplit = authHeader.replace("Bearer ","")
+    console.log(tokenSplit);
 
-    if(!token){
+    if(!tokenSplit){
         return res.status(401).json({msg: 'Acesso negado! Efetue o login.'})
+    }
+
+    try{
+        const secret = process.env.SECRET
+        jwt.verify(tokenSplit, secret)
+        const dados = jwt.verify(tokenSplit, secret);
+        res.locals = dados;
+        console.log(dados)
+        next()
+
+    } catch(error){
+        res.status(400).send({msg: "Token inválido!"})
     }
 }
 
@@ -54,7 +69,7 @@ app.post("/auth/login", async (req, res) => {
     }
 
     //check if user exists
-const user = await User.findOne({email: email})
+    const user = await User.findOne({email: email})
 
     if(!user){
         return res.status(404).json({msg: 'Usuário não encontrado!'})
