@@ -6,6 +6,7 @@ app.use(express.json())
 
 app.use(productsRouter)
 
+
 //rota publica
 app.get('/home', (req,res) => {
     res.status(200).json({msg: 'Bem vindo a nossa loja!'})
