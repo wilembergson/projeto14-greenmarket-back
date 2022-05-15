@@ -1,12 +1,16 @@
 require('dotenv').config()
+const cors = require('cors')
 const express = require('express')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-
 const app = express()
+const port = process.env.PORT || 3000;
 //json response express
 app.use(express.json())
+app.use(cors({
+    origin: '*',
+}));
 
 //models
 const User = require('./models/User')
@@ -112,8 +116,12 @@ mongoose
         `mongodb+srv://${dbUser}:${dbPassword}@cluster0.vlnix.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
     )
     .then(() => {
-        app.listen(3000)
-        console.log('Conectado ao banco de dados.')
+
+        
+        app.listen(port, () => {
+            console.log(`Conectado ao banco de dados. Rodando em http://localhost:${port}`)
+        });
+        
     })
     .catch((err) => console.log(err))
 
