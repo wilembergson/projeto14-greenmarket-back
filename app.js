@@ -177,5 +177,3 @@ app.post('/auth/register', async(req, res) => {
 
 })
 
-
-
