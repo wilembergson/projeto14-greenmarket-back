@@ -1,22 +1,26 @@
-require('dotenv').config()
-const cors = require('cors')
-const express = require('express')
-const mongoose = require('mongoose')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
+import cors from 'cors'
+import express from 'express'
+import mongoose from 'mongoose'
+import bcrypt from'bcrypt'
+import jwt from'jsonwebtoken'
+import productsRouter from'./src/routes/ProductsRouter.js'
+import dotenv from 'dotenv'
+dotenv.config()
+
+import db from './src/db.js'
+
 const app = express()
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 //json response express
 app.use(express.json())
 app.use(cors({
     origin: '*',
 }));
 
+app.use(productsRouter)
+
 //models
-const User = require('./models/User')
-const { json } = require('express/lib/response')
-
-
+import User from './src/models/User.js'
 
 //rota publica
 app.get('/', (req,res) => {
@@ -73,7 +77,7 @@ app.post("/auth/login", async (req, res) => {
     }
 
     //check if user exists
-    const user = await User.findOne({email: email})
+    const user = await db.collection('user').findOne({email: email})
 
     if(!user){
         return res.status(404).json({msg: 'Usuário não encontrado!'})
@@ -89,42 +93,22 @@ app.post("/auth/login", async (req, res) => {
 
     //secret e token
     try{
-        const secret =process.env.SECRET
+        const secret = process.env.SECRET
 
         const token = jwt.sign(
             {
             id: user._id,
             },
             secret,
-            )
-            //envia token se logou com sucesso
-            res.status(200).json({msg: 'Autenticação realizada com sucesso', token})
+        )
+        const userFound = await db.collection('user').findOne({email: email}) 
+        await db.collection('session').insertOne({email, token})
+        //envia token se logou com sucesso
+        res.status(200).json({msg: 'Autenticação realizada com sucesso',name: user.name, token})
     } catch(err){
         res.status(500).json({msg: 'Erro no servidor, 500!'})
     }
 })
-
-
-
-
-//credenciais
-const dbUser = process.env.DB_USER
-const dbPassword = process.env.DB_PASS
-
-mongoose
-    .connect(
-        `mongodb+srv://${dbUser}:${dbPassword}@cluster0.vlnix.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
-    )
-    .then(() => {
-
-        
-        app.listen(port, () => {
-            console.log(`Conectado ao banco de dados. Rodando em http://localhost:${port}`)
-        });
-        
-    })
-    .catch((err) => console.log(err))
-
 
 //register user: nome, email, senha, senhaconf
 app.post('/auth/register', async(req, res) => {
@@ -147,7 +131,8 @@ app.post('/auth/register', async(req, res) => {
     }
 
     //check user exists
-    const userExists = await User.findOne({email: email})
+    //const userExists = await User.findOne({email: email})
+    const userExists = await db.collection('users').findOne({email: email})
 
     if(userExists){
         return res.status(422).json({msg: "Utilize outro email!!"})
@@ -158,22 +143,40 @@ app.post('/auth/register', async(req, res) => {
     const passwordHash = await bcrypt.hash(password, salt)
 
     //create user
-    const user = new User({
+    /*const user = new User({
         name,
         email,
         password: passwordHash,
-    })
+    })*/
+
+    const user = {
+        name,
+        email,
+        password: passwordHash,
+    }
 
     try{
-
-        await user.save()
+        await db.collection('user').insertOne(user)
         res.status(201).json({msg:'Usuário criado com sucesso.'})
-
-
-
     } catch(error){
         res.status(500).json({msg: 'Erro no servidor, 500!'})
     }
-
 })
 
+//credenciais
+/*const dbUser = process.env.DB_USER
+const dbPassword = process.env.DB_PASS
+
+mongoose
+    .connect(
+        process.env.MONGO_URL
+    )
+    .then(() => {
+        app.listen(process.env.PORT, () => {
+            console.log(`Conectado ao banco de dados. Rodando em http://localhost:${process.env.PORT}`)
+        });
+        
+    })
+    .catch((err) => console.log(err))*/
+
+app.listen(process.env.PORT)
