@@ -64,7 +64,6 @@ function checkToken(req, res, next){
     }
 }
 
-
 //login user
 app.post("/auth/login", async (req, res) => {
     const {email, password} = req.body
