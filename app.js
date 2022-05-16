@@ -1,6 +1,5 @@
 import cors from 'cors'
 import express from 'express'
-import mongoose from 'mongoose'
 import bcrypt from'bcrypt'
 import jwt from'jsonwebtoken'
 import productsRouter from'./src/routes/ProductsRouter.js'
@@ -10,7 +9,6 @@ dotenv.config()
 import db from './src/db.js'
 
 const app = express()
-const port = process.env.PORT || 5000;
 //json response express
 app.use(express.json())
 app.use(cors({
@@ -178,5 +176,5 @@ mongoose
     })
     .catch((err) => console.log(err))*/
     
-    
+
 app.listen(process.env.PORT)
